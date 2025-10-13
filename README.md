@@ -120,6 +120,8 @@ Foi adicionada uma interface em Streamlit para permitir o preenchimento das opor
 
 ## Como Disponibilizar Online
 
+Para um guia passo a passo detalhado (incluindo pré-requisitos, criação do repositório no GitHub e sugestões de provedores), consulte [docs/deploy.md](docs/deploy.md).
+
 Você pode publicar a aplicação na nuvem de duas maneiras rápidas:
 
 ### 1. Streamlit Community Cloud
