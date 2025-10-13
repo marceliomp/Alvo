@@ -122,6 +122,8 @@ Foi adicionada uma interface em Streamlit para permitir o preenchimento das opor
 
 Para um guia passo a passo detalhado (incluindo pré-requisitos, criação do repositório no GitHub e sugestões de provedores), consulte [docs/deploy.md](docs/deploy.md).
 
+Se quiser publicar no Vercel com o Dockerfile do projeto, siga o guia específico em [docs/vercel_deploy.md](docs/vercel_deploy.md).
+
 Se precisar de um resumo curto para solicitar a publicação em provedores como a Hostinger, utilize o texto em [docs/hostinger_resumo.txt](docs/hostinger_resumo.txt).
 
 Você pode publicar a aplicação na nuvem de duas maneiras rápidas:
@@ -155,7 +157,15 @@ Para preservar os dados entre reinicializações, configure um diretório persis
 
 3. Acesse `http://localhost:8501` no navegador e compartilhe o endereço público (ou faça o deploy em um provedor como AWS, Azure, GCP, Railway, etc.).
 
-> **Dica:** ao publicar em um provedor de containers, garanta que o diretório `/app/data` esteja em um volume persistente para que as informações cadastradas permaneçam disponíveis.
+
+### 3. Vercel (via Docker)
+
+1. Conecte o repositório ao Vercel (GitHub, GitLab ou import manual) e mantenha o arquivo `vercel.json` na raiz.
+2. O Vercel utilizará automaticamente o `Dockerfile` para construir a aplicação graças à configuração em `vercel.json`.
+3. Após o deploy, o serviço ficará disponível em `https://<seu-projeto>.vercel.app`. Configure um domínio customizado em **Settings → Domains**, se desejar.
+4. Para preservar dados persistentes, integre o app com um serviço externo (bucket, banco gerenciado) ou utilize outra estratégia de armazenamento, pois o sistema de arquivos do Vercel é efêmero.
+
+> **Dica:** o checklist completo para Vercel está em [docs/vercel_deploy.md](docs/vercel_deploy.md).
 
 ## Publicação no GitHub Pages
 
