@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import io
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
@@ -17,6 +18,8 @@ from alvo_forecast import (
     loss_reason_summary,
     objections_report,
     spin_stage_blockers,
+    load_repository,
+    save_repository,
 )
 
 STATUS_LABELS = {
@@ -39,12 +42,15 @@ DEFAULT_LOSS_REASONS = [
     "Mudança de prioridade do cliente",
 ]
 
+DATA_PATH = Path("data/forecast_data.json")
+
 
 def _init_session_state() -> None:
     if "repo" not in st.session_state:
-        st.session_state.repo = ForecastRepository()
-        st.session_state.next_opportunity_id = 1
-        st.session_state.next_loss_reason_id = 1
+        repo, next_opp_id, next_reason_id = load_repository(DATA_PATH)
+        st.session_state.repo = repo
+        st.session_state.next_opportunity_id = next_opp_id
+        st.session_state.next_loss_reason_id = next_reason_id
         _seed_default_loss_reasons()
 
 
@@ -60,6 +66,16 @@ def _seed_default_loss_reasons() -> None:
         )
         repo.add_loss_reason(reason)
         st.session_state.next_loss_reason_id += 1
+    _persist_state()
+
+
+def _persist_state() -> None:
+    save_repository(
+        st.session_state.repo,
+        DATA_PATH,
+        next_opportunity_id=st.session_state.next_opportunity_id,
+        next_loss_reason_id=st.session_state.next_loss_reason_id,
+    )
 
 
 def _create_opportunity_row(opportunity: Opportunity) -> dict:
@@ -111,6 +127,7 @@ def _render_loss_reason_form() -> None:
                     repo.add_loss_reason(reason)
                     st.session_state.next_loss_reason_id += 1
                     st.success("Motivo cadastrado com sucesso!")
+                    _persist_state()
 
     loss_reasons = repo.list_loss_reasons(active_only=False)
     if loss_reasons:
@@ -257,6 +274,7 @@ def _render_opportunity_form() -> None:
             repo.add_opportunity(opportunity)
             st.session_state.next_opportunity_id += 1
             st.success("Oportunidade salva com sucesso!")
+            _persist_state()
 
 
 def _render_opportunities_table() -> None:

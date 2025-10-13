@@ -47,6 +47,26 @@ Para oportunidades acima do ticket definido, utilize o método `require_spin` pa
 
 O `ForecastRepository` oferece operações básicas para registrar e atualizar oportunidades e motivos de perda em memória. Ele também permite identificar facilmente quais oportunidades exigem o preenchimento completo do questionário SPIN.
 
+## Persistência em JSON
+
+Para manter os dados entre execuções, utilize os utilitários `load_repository` e `save_repository`. Eles gravam todas as oportunidades, motivos de perda e os próximos identificadores em um único arquivo JSON.
+
+```python
+from pathlib import Path
+
+from alvo_forecast import load_repository, save_repository
+
+path = Path("data/forecast_data.json")
+repo, next_opportunity_id, next_loss_reason_id = load_repository(path)
+# ... interaja com o repositório ...
+save_repository(
+    repo,
+    path,
+    next_opportunity_id=next_opportunity_id,
+    next_loss_reason_id=next_loss_reason_id,
+)
+```
+
 ## Camada Analítica
 
 O módulo inclui funções para gerar as principais visões do dashboard descrito na especificação inicial:
@@ -96,7 +116,7 @@ Foi adicionada uma interface em Streamlit para permitir o preenchimento das opor
    streamlit run app/streamlit_app.py
    ```
 
-3. Acesse o endereço indicado pelo Streamlit no navegador para registrar oportunidades, cadastrar motivos de perda, visualizar o dashboard analítico e exportar os dados em CSV.
+3. Acesse o endereço indicado pelo Streamlit no navegador para registrar oportunidades, cadastrar motivos de perda, visualizar o dashboard analítico e exportar os dados em CSV. Todas as inclusões são persistidas automaticamente no arquivo `data/forecast_data.json`.
 
 ## Próximos Passos
 

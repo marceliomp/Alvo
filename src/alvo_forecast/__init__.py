@@ -9,6 +9,7 @@ from .analytics import (
     objections_report,
 )
 from .exporters import export_opportunities_to_csv
+from .storage import load_repository, save_repository
 
 __all__ = [
     "Opportunity",
@@ -21,4 +22,6 @@ __all__ = [
     "spin_stage_blockers",
     "objections_report",
     "export_opportunities_to_csv",
+    "load_repository",
+    "save_repository",
 ]
