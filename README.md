@@ -122,6 +122,8 @@ Foi adicionada uma interface em Streamlit para permitir o preenchimento das opor
 
 Para um guia passo a passo detalhado (incluindo pré-requisitos, criação do repositório no GitHub e sugestões de provedores), consulte [docs/deploy.md](docs/deploy.md).
 
+Se precisar de um resumo curto para solicitar a publicação em provedores como a Hostinger, utilize o texto em [docs/hostinger_resumo.txt](docs/hostinger_resumo.txt).
+
 Você pode publicar a aplicação na nuvem de duas maneiras rápidas:
 
 ### 1. Streamlit Community Cloud
