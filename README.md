@@ -153,6 +153,22 @@ Para preservar os dados entre reinicializações, configure um diretório persis
 
 > **Dica:** ao publicar em um provedor de containers, garanta que o diretório `/app/data` esteja em um volume persistente para que as informações cadastradas permaneçam disponíveis.
 
+## Publicação no GitHub Pages
+
+Como a aplicação Streamlit precisa de um servidor Python em execução, o GitHub Pages será usado como um site estático complementar com informações e um link para o deploy ativo (por exemplo, no Streamlit Cloud ou em um provedor de containers).
+
+1. Crie um repositório na sua conta do GitHub e copie a URL (HTTPS ou SSH).
+2. No seu ambiente local, clone este projeto ou adicione o remoto ao diretório atual:
+
+   ```bash
+   git remote add origin <url-do-seu-repositorio>
+   git push -u origin main
+   ```
+
+3. No GitHub, acesse **Settings → Pages** e selecione como fonte o branch `main` com a pasta `/docs`.
+4. Edite o arquivo `docs/index.md` e substitua o placeholder `https://<seu-app-streamlit>` pela URL real do deploy (por exemplo, o endereço gerado no Streamlit Cloud).
+5. Aguarde alguns minutos até que o GitHub Pages publique o site. Compartilhe o link gerado com o time para que eles encontrem rapidamente o app e a documentação.
+
 ## Próximos Passos
 
 - Integrar os modelos a um banco de dados relacional.
