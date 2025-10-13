@@ -46,8 +46,8 @@ Se você preferir controlar a infraestrutura ou já tiver conta em plataformas c
    docker run -p 8501:8501 -v "$(pwd)/data:/app/data" alvo-forecast
    ```
    O app ficará disponível em `http://localhost:8501`.
-2. Nos provedores que aceitam deploy via Dockerfile, basta apontar o repositório e informar a porta `8501` como porta exposta.
-3. Configure uma variável de ambiente chamada `STREAMLIT_SERVER_PORT=8501` caso o provedor exija a declaração explícita.
+2. Nos provedores que aceitam deploy via Dockerfile, garanta que o serviço exponha a porta definida pela plataforma (muitos usam a variável `PORT`). O container utiliza esse valor automaticamente, com `8501` como padrão local.
+3. Se o provedor exigir a declaração manual, defina `PORT` para a porta esperada (por exemplo, `PORT=3000` no Vercel) e ajuste o mapeamento externo conforme necessário.
 4. Monte um volume persistente (por exemplo, `/app/data`) para garantir que `data/forecast_data.json` seja preservado.
 
 ## 4. Publicar a Página Informativa no GitHub Pages
