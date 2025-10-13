@@ -12,10 +12,11 @@ Este guia resume como publicar o forecast imobiliário no [Vercel](https://verce
 
 1. Acesse o painel do Vercel e clique em **Add New… → Project**.
 2. Conecte a sua conta GitHub (caso ainda não esteja conectada) e selecione o repositório do projeto.
-3. Em **Framework Preset**, escolha **Other**.
-4. Em **Build & Development Settings**, não defina nenhum comando personalizado. O Vercel detectará o `vercel.json` e usará o Dockerfile automaticamente.
+3. Em **Framework Preset**, escolha **Other**. Nas demais opções da tela inicial mantenha:
+   - **Root Directory** como `./` (a raiz do repositório já está pronta para o deploy).
+   - **Build & Output Settings** sem comandos extras — não precisa preencher `Build Command`, `Install Command` ou `Output Directory`.
+4. Prossiga com **Deploy**. O Vercel detectará o `vercel.json`, construirá a imagem a partir do Dockerfile e iniciará o container automaticamente.
 5. O Vercel define automaticamente a variável `PORT` (geralmente `3000`). O container da aplicação já respeita esse valor, portanto não é necessário editar comandos de execução.
-6. Clique em **Deploy** para iniciar a primeira implantação.
 
 > ⚠️ O Vercel cria uma instância efêmera a partir do container. Dados gravados na pasta `data/` serão perdidos quando o container reiniciar. Para manter persistência, configure um storage externo (por exemplo, bucket S3, Supabase ou banco gerenciado) e adapte o app para usá-lo.
 

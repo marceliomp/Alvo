@@ -161,10 +161,12 @@ Para preservar os dados entre reinicializações, configure um diretório persis
 ### 3. Vercel (via Docker)
 
 1. Conecte o repositório ao Vercel (GitHub, GitLab ou import manual) e mantenha o arquivo `vercel.json` na raiz.
-2. O Vercel utilizará automaticamente o `Dockerfile` para construir a aplicação graças à configuração em `vercel.json`.
-3. O container detecta automaticamente a porta indicada pelo Vercel (variável de ambiente `PORT`); nenhum ajuste manual é necessário.
-4. Após o deploy, o serviço ficará disponível em `https://<seu-projeto>.vercel.app`. Configure um domínio customizado em **Settings → Domains**, se desejar.
-5. Para preservar dados persistentes, integre o app com um serviço externo (bucket, banco gerenciado) ou utilize outra estratégia de armazenamento, pois o sistema de arquivos do Vercel é efêmero.
+2. Ao criar o projeto, escolha o **Framework Preset** `Other`, mantenha o **Root Directory** como `./` e não informe comandos personalizados de build/execução.
+3. O Vercel utilizará automaticamente o `Dockerfile` para construir a aplicação graças à configuração em `vercel.json`.
+4. O container detecta automaticamente a porta indicada pelo Vercel (variável de ambiente `PORT`); nenhum ajuste manual é necessário.
+5. Após o deploy, o serviço ficará disponível em `https://<seu-projeto>.vercel.app`. Configure um domínio customizado em **Settings → Domains**, se desejar.
+
+> **Atenção:** Para preservar dados persistentes, integre o app com um serviço externo (bucket, banco gerenciado) ou utilize outra estratégia de armazenamento, pois o sistema de arquivos do Vercel é efêmero.
 
 > **Dica:** o checklist completo para Vercel está em [docs/vercel_deploy.md](docs/vercel_deploy.md).
 
