@@ -118,6 +118,41 @@ Foi adicionada uma interface em Streamlit para permitir o preenchimento das opor
 
 3. Acesse o endereço indicado pelo Streamlit no navegador para registrar oportunidades, cadastrar motivos de perda, visualizar o dashboard analítico e exportar os dados em CSV. Todas as inclusões são persistidas automaticamente no arquivo `data/forecast_data.json`.
 
+## Como Disponibilizar Online
+
+Você pode publicar a aplicação na nuvem de duas maneiras rápidas:
+
+### 1. Streamlit Community Cloud
+
+1. Faça fork deste repositório para a sua conta do GitHub.
+2. Acesse [streamlit.io/cloud](https://streamlit.io/cloud) e conecte sua conta do GitHub.
+3. Crie um novo app selecionando o repositório e o branch desejado.
+4. Informe `app/streamlit_app.py` como arquivo principal e mantenha o comando padrão (`streamlit run`).
+5. O ambiente utilizará automaticamente o arquivo `requirements.txt` para instalar as dependências (`-e .[app]`).
+6. Após o deploy, compartilhe a URL gerada com o time de corretores.
+
+Para preservar os dados entre reinicializações, configure um diretório persistente nas configurações avançadas do Streamlit Cloud ou integre com um serviço externo (ex.: Google Sheets, banco de dados).
+
+### 2. Container Docker
+
+1. Construa a imagem:
+
+   ```bash
+   docker build -t alvo-forecast .
+   ```
+
+2. Execute o container expondo a porta 8501 e montando um volume para manter os dados do arquivo `data/forecast_data.json`:
+
+   ```bash
+   docker run -p 8501:8501 \
+     -v "$(pwd)/data:/app/data" \
+     alvo-forecast
+   ```
+
+3. Acesse `http://localhost:8501` no navegador e compartilhe o endereço público (ou faça o deploy em um provedor como AWS, Azure, GCP, Railway, etc.).
+
+> **Dica:** ao publicar em um provedor de containers, garanta que o diretório `/app/data` esteja em um volume persistente para que as informações cadastradas permaneçam disponíveis.
+
 ## Próximos Passos
 
 - Integrar os modelos a um banco de dados relacional.
