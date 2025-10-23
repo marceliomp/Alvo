@@ -50,11 +50,17 @@ Aplicativo de console para analisar a margem de contribuição, EBITDA e lucro d
      python -m alvo_app data/exemplo_cenario.json --override "other_income=12000" --override "depreciation=5000"
      ```
 
- - Substituir o percentual de comissão da venda `V001` por 6% e redistribuir automaticamente os custos variáveis totais:
+  - Substituir o percentual de comissão da venda `V001` por 6% e redistribuir automaticamente os custos variáveis totais:
 
-    ```bash
-    python -m alvo_app data/exemplo_cenario.json --override "sale.V001.commission_rate=0.06" --override "sale.V001.variable_costs=15000"
-    ```
+     ```bash
+     python -m alvo_app data/exemplo_cenario.json --override "sale.V001.commission_rate=0.06" --override "sale.V001.variable_costs=15000"
+     ```
+
+  - Ajustar apenas um componente de custo variável, como marketing da venda `V002`:
+
+     ```bash
+     python -m alvo_app data/exemplo_cenario.json --override "sale.V002.variable_costs.marketing=3500"
+     ```
 
 5. **Salvar o cenário ajustado:**
 

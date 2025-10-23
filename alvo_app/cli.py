@@ -42,11 +42,12 @@ def apply_overrides(scenario: Scenario, overrides: Iterable[str]) -> None:
             scenario.apply_fixed_cost_override(key.split(".", 1)[1], value)
         elif key.startswith("sale."):
             parts = key.split(".")
-            if len(parts) != 3:
+            if len(parts) < 3:
                 raise ValueError(
                     "Use o formato sale.ID.campo=valor. Exemplo: sale.V001.sale_value=1000000"
                 )
-            _, identifier, field = parts
+            _, identifier, *field_parts = parts
+            field = ".".join(field_parts)
             try:
                 scenario.apply_sale_override(identifier, field, value)
             except KeyError as exc:

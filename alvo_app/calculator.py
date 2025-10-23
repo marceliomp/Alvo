@@ -213,6 +213,9 @@ class Scenario:
                 elif field == "commission_rate":
                     sale.commission_rate = value
                     sale.clear_manual_revenue()
+                elif field.startswith("variable_costs."):
+                    _, subfield = field.split(".", 1)
+                    sale.variable_costs[subfield] = value
                 elif field == "variable_costs":
                     total = sale.total_variable_costs
                     if total == 0:

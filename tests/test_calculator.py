@@ -43,3 +43,10 @@ def test_difference():
     diff = updated.difference(metrics)
     assert diff.total_revenue == updated.total_revenue - metrics.total_revenue
     assert diff.ebitda == updated.ebitda - metrics.ebitda
+
+
+def test_override_variable_cost_component():
+    scenario = load_example()
+    scenario.apply_sale_override("V001", "variable_costs.marketing", 3000.0)
+    sale = next(s for s in scenario.sales if s.id == "V001")
+    assert sale.variable_costs["marketing"] == 3000.0
