@@ -1,15 +1,33 @@
 # Alvo Forecast
 
-## Descrição do Projeto
+Ferramenta interativa para simular o resultado operacional de uma operação imobiliária. Cadastre vendas, acompanhe a margem de contribuição por corretor e teste cenários variando receita, custos variáveis, comissões e despesas fixas.
 
-O Alvo Forecast é uma ferramenta de forecast de vendas imobiliárias que utiliza a metodologia SPIN Selling para otimizar as vendas. O projeto inclui uma análise de perdas e um dashboard interativo para corretores e gestores, permitindo uma visualização clara e eficaz dos dados de vendas.
+## Pré-requisitos
 
-## Identidade Visual
+- Node.js 18 ou superior
+- npm 9 ou superior
 
-A identidade visual do projeto será composta pelas seguintes cores:
-- Branco
-- Preto
-- Azul Petróleo
-- Verde Petróleo
+## Como executar
 
-A logomarca e a paleta de cores foram cuidadosamente escolhidas para refletir a seriedade e a modernidade da ferramenta.
+```bash
+npm install
+npm run dev
+```
+
+O comando `npm run dev` inicia o Vite na porta `5173`. A aplicação será recarregada automaticamente ao salvar alterações.
+
+## Build de produção
+
+```bash
+npm run build
+npm run preview
+```
+
+O build gera os arquivos estáticos em `dist/`. O comando `npm run preview` permite validar a versão otimizada antes da publicação.
+
+## Funcionalidades principais
+
+- Consolidação das vendas com cálculo automático de margem de contribuição e EBITDA.
+- Visão por corretor com receita, comissões e margem.
+- Simulador de cenários para ajustar percentuais de receita, custos variáveis, comissões e custos fixos.
+- Inclusão e remoção de vendas em tempo real.
