@@ -22,14 +22,14 @@ def test_metrics_calculation():
     scenario = load_example()
     metrics = scenario.summary()
 
-    assert round(metrics.total_revenue, 2) == 360000.0
-    assert round(metrics.total_variable_costs, 2) == 38200.0
-    assert round(metrics.contribution_margin, 2) == 321800.0
+    assert round(metrics.total_revenue, 2) == 119500.0
+    assert round(metrics.total_variable_costs, 2) == 67100.0
+    assert round(metrics.contribution_margin, 2) == 52400.0
     assert round(metrics.fixed_cost_total, 2) == 63000.0
-    assert round(metrics.ebitda, 2) == 260800.0
-    assert round(metrics.operating_profit, 2) == 254800.0
-    assert round(metrics.contribution_margin_ratio, 4) == round(321800.0 / 360000.0, 4)
-    assert round(metrics.net_margin, 4) == round(254800.0 / 360000.0, 4)
+    assert round(metrics.ebitda, 2) == -8600.0
+    assert round(metrics.operating_profit, 2) == -14600.0
+    assert round(metrics.contribution_margin_ratio, 4) == round(52400.0 / 119500.0, 4)
+    assert round(metrics.net_margin, 4) == round(-14600.0 / 119500.0, 4)
     assert metrics.break_even_revenue is not None
 
 

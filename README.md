@@ -1,6 +1,6 @@
 # Alvo Forecast
 
-Aplicativo de console para analisar a margem de contribuição, EBITDA e lucro das vendas imobiliárias. O objetivo é permitir simulações rápidas de cenários alterando volumes de vendas, custos variáveis por corretor e componentes de custos fixos.
+Aplicativo de console para analisar a margem de contribuição, EBITDA e lucro das vendas imobiliárias. O objetivo é permitir simulações rápidas de cenários alterando valores de imóveis, percentuais de comissão por produto, custos variáveis por corretor e componentes de custos fixos.
 
 ## Como executar
 
@@ -30,17 +30,17 @@ Aplicativo de console para analisar a margem de contribuição, EBITDA e lucro d
 
 4. **Brincar com cenários:**
 
-   - Aumentar toda a receita em 8% e reduzir custos variáveis em 5%:
+  - Aumentar o valor de todos os imóveis (e a comissão resultante) em 8% e reduzir custos variáveis em 5%:
 
      ```bash
      python -m alvo_app data/exemplo_cenario.json --scale-revenue 1.08 --scale-variable-costs 0.95
      ```
 
-   - Ajustar somente a performance da corretora Maria (+12% de receita) e reduzir custos fixos de tecnologia para R$ 6.500:
+  - Ajustar somente o valor das vendas da corretora Maria (+12%) e reduzir custos fixos de tecnologia para R$ 6.500:
 
      ```bash
      python -m alvo_app data/exemplo_cenario.json \
-       --scale-broker "Maria.revenue=1.12" \
+    --scale-broker "Maria.sale_value=1.12" \
        --override "fixed.tecnologia=6500"
      ```
 
@@ -50,17 +50,36 @@ Aplicativo de console para analisar a margem de contribuição, EBITDA e lucro d
      python -m alvo_app data/exemplo_cenario.json --override "other_income=12000" --override "depreciation=5000"
      ```
 
-   - Substituir a receita da venda `V001` por um valor específico e redistribuir automaticamente os custos variáveis totais:
+ - Substituir o percentual de comissão da venda `V001` por 6% e redistribuir automaticamente os custos variáveis totais:
 
-     ```bash
-     python -m alvo_app data/exemplo_cenario.json --override "sale.V001.revenue=180000" --override "sale.V001.variable_costs=15000"
-     ```
+    ```bash
+    python -m alvo_app data/exemplo_cenario.json --override "sale.V001.commission_rate=0.06" --override "sale.V001.variable_costs=15000"
+    ```
 
 5. **Salvar o cenário ajustado:**
 
    ```bash
    python -m alvo_app data/exemplo_cenario.json --scale-revenue 1.05 --save simulacao.json
    ```
+
+## Formato do arquivo de cenário
+
+Cada venda deve informar o valor do imóvel (`sale_value`) e o percentual de comissão recebido pela Alvo (`commission_rate`). A receita líquida considerada nos cálculos é `sale_value * commission_rate`. Se preferir trabalhar diretamente com a receita já calculada, também é possível acrescentar o campo `revenue`, que passa a sobrescrever o valor derivado da comissão.
+
+Exemplo resumido:
+
+```json
+{
+  "id": "V001",
+  "broker": "Maria",
+  "sale_value": 1000000.0,
+  "commission_rate": 0.05,
+  "variable_costs": {
+    "comissao_corretor": 20000.0,
+    "marketing": 5000.0
+  }
+}
+```
 
 ## Testes
 

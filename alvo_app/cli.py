@@ -44,7 +44,7 @@ def apply_overrides(scenario: Scenario, overrides: Iterable[str]) -> None:
             parts = key.split(".")
             if len(parts) != 3:
                 raise ValueError(
-                    "Use o formato sale.ID.campo=valor. Exemplo: sale.V001.revenue=180000"
+                    "Use o formato sale.ID.campo=valor. Exemplo: sale.V001.sale_value=1000000"
                 )
             _, identifier, field = parts
             try:
@@ -56,7 +56,7 @@ def apply_overrides(scenario: Scenario, overrides: Iterable[str]) -> None:
         else:
             raise ValueError(
                 "Use o prefixo 'fixed.' para custos fixos ou 'sale.' para vendas, por exemplo "
-                "fixed.aluguel=12000 ou sale.V001.revenue=95000. "
+                "fixed.aluguel=12000 ou sale.V001.commission_rate=0.05. "
                 "Para ajustar outros itens utilize other_income=1000, other_expenses=500 etc."
             )
 
@@ -71,15 +71,17 @@ def apply_scaling(scenario: Scenario, args: argparse.Namespace) -> None:
     for broker_scale in args.scale_broker or []:
         broker, field, raw_multiplier = parse_three_part_entry(
             broker_scale,
-            "Use o formato 'NomeDoCorretor.campo=valor'. Campos suportados: revenue, variable_costs",
+            "Use o formato 'NomeDoCorretor.campo=valor'. Campos suportados: sale_value, revenue, variable_costs",
         )
         multiplier = float(raw_multiplier)
-        if field == "revenue":
+        if field in {"revenue", "sale_value"}:
             scenario.apply_broker_scaling(broker, revenue_multiplier=multiplier)
         elif field == "variable_costs":
             scenario.apply_broker_scaling(broker, variable_cost_multiplier=multiplier)
         else:
-            raise ValueError("Campo inválido para escala de corretor: utilize revenue ou variable_costs")
+            raise ValueError(
+                "Campo inválido para escala de corretor: utilize sale_value (ou revenue) ou variable_costs"
+            )
 
 
 def parse_three_part_entry(raw: str, error_message: str) -> List[str]:
@@ -98,7 +100,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--scale-revenue",
         type=float,
-        help="Multiplicador para a receita de todas as vendas (ex: 1.1 aumenta em 10%)",
+        help="Multiplicador para o valor de venda (e consequentemente a comissão) de todas as vendas",
     )
     parser.add_argument(
         "--scale-variable-costs",
@@ -113,7 +115,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--scale-broker",
         action="append",
-        help="Ajuste específico por corretor (ex: 'Maria.revenue=1.1' ou 'Joao.variable_costs=0.9')",
+        help="Ajuste específico por corretor (ex: 'Maria.sale_value=1.1' ou 'Joao.variable_costs=0.9')",
     )
     parser.add_argument(
         "--override",
@@ -181,7 +183,9 @@ def main(argv: Optional[List[str]] = None) -> None:
                 {
                     "id": sale.id,
                     "broker": sale.broker,
-                    "revenue": sale.revenue,
+                    "sale_value": sale.sale_value,
+                    "commission_rate": sale.commission_rate,
+                    **({"revenue": sale.revenue} if sale._manual_revenue is not None else {}),
                     "variable_costs": sale.variable_costs,
                     "notes": sale.notes,
                 }

@@ -11,9 +11,32 @@ class Sale:
 
     id: str
     broker: str
-    revenue: float
+    sale_value: float
+    commission_rate: float = 1.0
     variable_costs: Dict[str, float] = field(default_factory=dict)
     notes: Optional[str] = None
+    _manual_revenue: Optional[float] = field(default=None, repr=False)
+
+    @property
+    def revenue(self) -> float:
+        """Commission revenue earned by Alvo for the sale."""
+
+        if self._manual_revenue is not None:
+            return self._manual_revenue
+        return self.sale_value * self.commission_rate
+
+    @revenue.setter
+    def revenue(self, value: float) -> None:
+        self._manual_revenue = value
+
+    def clear_manual_revenue(self) -> None:
+        self._manual_revenue = None
+
+    def scale_revenue(self, multiplier: float) -> None:
+        if self._manual_revenue is not None:
+            self._manual_revenue *= multiplier
+        else:
+            self.sale_value *= multiplier
 
     @property
     def total_variable_costs(self) -> float:
@@ -44,13 +67,28 @@ class Sale:
             variable_costs = {str(k): float(v) for k, v in variable_costs_payload.items()}
         else:
             variable_costs = {"total": float(variable_costs_payload)}
-        return cls(
+        manual_revenue: Optional[float] = None
+        if "sale_value" in payload:
+            sale_value = float(payload["sale_value"])
+        elif "revenue" in payload:
+            sale_value = float(payload["revenue"])
+            manual_revenue = float(payload["revenue"])
+        else:
+            raise KeyError("Sale entry must contain 'sale_value' or 'revenue'")
+        commission_rate = float(payload.get("commission_rate", 1.0))
+        sale = cls(
             id=str(payload["id"]),
             broker=str(payload["broker"]),
-            revenue=float(payload["revenue"]),
+            sale_value=sale_value,
+            commission_rate=commission_rate,
             variable_costs=variable_costs,
             notes=str(payload.get("notes")) if payload.get("notes") is not None else None,
         )
+        if "revenue" in payload and "sale_value" in payload:
+            sale.revenue = float(payload["revenue"])
+        elif manual_revenue is not None and "sale_value" not in payload:
+            sale.revenue = manual_revenue
+        return sale
 
 
 @dataclass
@@ -101,9 +139,22 @@ class Scenario:
     def clone(self) -> "Scenario":
         """Return a deep copy of the scenario."""
 
+        cloned_sales: List[Sale] = []
+        for sale in self.sales:
+            new_sale = Sale(
+                id=sale.id,
+                broker=sale.broker,
+                sale_value=sale.sale_value,
+                commission_rate=sale.commission_rate,
+                variable_costs=dict(sale.variable_costs),
+                notes=sale.notes,
+            )
+            if sale._manual_revenue is not None:
+                new_sale.revenue = sale._manual_revenue
+            cloned_sales.append(new_sale)
         return Scenario(
             name=self.name,
-            sales=[Sale(sale.id, sale.broker, sale.revenue, dict(sale.variable_costs), sale.notes) for sale in self.sales],
+            sales=cloned_sales,
             fixed_costs=dict(self.fixed_costs),
             other_income=self.other_income,
             other_expenses=self.other_expenses,
@@ -122,7 +173,7 @@ class Scenario:
 
         if revenue_multiplier is not None:
             for sale in self.sales:
-                sale.revenue *= revenue_multiplier
+                sale.scale_revenue(revenue_multiplier)
         if variable_cost_multiplier is not None:
             for sale in self.sales:
                 for key in list(sale.variable_costs):
@@ -144,7 +195,7 @@ class Scenario:
             if sale.broker.lower() != broker.lower():
                 continue
             if revenue_multiplier is not None:
-                sale.revenue *= revenue_multiplier
+                sale.scale_revenue(revenue_multiplier)
             if variable_cost_multiplier is not None:
                 for key in list(sale.variable_costs):
                     sale.variable_costs[key] *= variable_cost_multiplier
@@ -156,6 +207,12 @@ class Scenario:
             if sale.id == sale_id:
                 if field == "revenue":
                     sale.revenue = value
+                elif field == "sale_value":
+                    sale.sale_value = value
+                    sale.clear_manual_revenue()
+                elif field == "commission_rate":
+                    sale.commission_rate = value
+                    sale.clear_manual_revenue()
                 elif field == "variable_costs":
                     total = sale.total_variable_costs
                     if total == 0:
