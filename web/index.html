@@ -4,7 +4,307 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Alvo Forecast Playground</title>
-    <link rel="stylesheet" href="style.css" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f6f8fb;
+        --card-bg: #ffffffcc;
+        --border: #d0d7de;
+        --accent: #185adb;
+        --text: #1f2933;
+        --muted: #52606d;
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #eef2ff 0%, #fdf2f8 100%);
+        color: var(--text);
+      }
+
+      .app-header {
+        padding: 2.5rem clamp(1rem, 4vw, 4rem);
+        background: rgba(255, 255, 255, 0.85);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(6px);
+      }
+
+      .app-header h1 {
+        margin: 0 0 0.5rem;
+        font-size: clamp(1.8rem, 3vw, 2.6rem);
+      }
+
+      .app-header p {
+        margin: 0;
+        max-width: 48rem;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      main {
+        padding: clamp(1rem, 3vw, 3rem);
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        max-width: 1200px;
+        margin: 0 auto 3rem;
+      }
+
+      .card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        box-shadow: 0 20px 45px -30px rgba(18, 38, 63, 0.45);
+        border: 1px solid rgba(24, 90, 219, 0.08);
+        overflow: hidden;
+      }
+
+      .card-header {
+        padding: 1.25rem clamp(1rem, 3vw, 2rem);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+      }
+
+      .card-body {
+        padding: 1.5rem clamp(1rem, 3vw, 2rem);
+      }
+
+      .grid {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      .scale-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        align-items: end;
+      }
+
+      .other-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
+
+      .kpi-table,
+      .editable-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .kpi-table td,
+      .kpi-table th,
+      .editable-table td,
+      .editable-table th {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        text-align: left;
+      }
+
+      .kpi-table tr:last-child td,
+      .editable-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .kpi-table td:first-child {
+        color: var(--muted);
+      }
+
+      button {
+        border: none;
+        border-radius: 999px;
+        padding: 0.6rem 1.4rem;
+        background: var(--accent);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 25px -18px rgba(24, 90, 219, 0.65);
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        padding: 0.6rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        background: rgba(255, 255, 255, 0.9);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      input[type="text"]:focus,
+      input[type="number"]:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(24, 90, 219, 0.15);
+      }
+
+      .scenario-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+      }
+
+      .scenario-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+      }
+
+      .upload-btn {
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .upload-btn input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .sale-card {
+        border: 1px solid rgba(24, 90, 219, 0.12);
+        border-radius: 16px;
+        padding: 1.25rem;
+        background: white;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 15px 35px -32px rgba(18, 38, 63, 0.5);
+      }
+
+      .sale-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .sale-header h3 {
+        margin: 0;
+      }
+
+      .sale-header-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .sale-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        margin-top: 1rem;
+      }
+
+      .variable-costs {
+        margin-top: 1.5rem;
+      }
+
+      .sale-footer {
+        margin-top: 1.25rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        color: var(--muted);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+
+      .sale-footer strong {
+        color: var(--text);
+      }
+
+      .variable-costs table input[type="text"] {
+        min-width: 140px;
+      }
+
+      .variable-costs table input[type="number"] {
+        min-width: 120px;
+      }
+
+      .muted {
+        color: var(--muted);
+        font-style: italic;
+        text-align: center;
+      }
+
+      .sales-actions {
+        margin-top: 1.5rem;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .remove-cost,
+      .remove-sale,
+      .clear-manual-revenue {
+        background: rgba(255, 71, 87, 0.12);
+        color: #c92a2a;
+      }
+
+      .remove-cost:hover,
+      .remove-sale:hover,
+      .clear-manual-revenue:hover {
+        box-shadow: 0 10px 18px -16px rgba(201, 42, 42, 0.9);
+      }
+
+      .add-variable-cost {
+        background: rgba(16, 185, 129, 0.12);
+        color: #047857;
+      }
+
+      .add-variable-cost:hover {
+        box-shadow: 0 10px 18px -16px rgba(4, 120, 87, 0.9);
+      }
+
+      @media (max-width: 768px) {
+        .scenario-actions {
+          width: 100%;
+          justify-content: flex-start;
+        }
+
+        .sale-footer {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
   </head>
   <body>
     <header class="app-header">
@@ -190,6 +490,721 @@
       </tr>
     </template>
 
-    <script type="module" src="app.js"></script>
+    <script id="default-scenario" type="application/json">
+      {
+        "name": "Base 2024",
+        "sales": [
+          {
+            "id": "V001",
+            "broker": "Maria",
+            "sale_value": 1000000.0,
+            "commission_rate": 0.05,
+            "variable_costs": {
+              "comissao_corretor": 20000.0,
+              "marketing": 5000.0,
+              "impostos": 2500.0
+            }
+          },
+          {
+            "id": "V002",
+            "broker": "João",
+            "sale_value": 750000.0,
+            "commission_rate": 0.045,
+            "variable_costs": {
+              "comissao_corretor": 13500.0,
+              "marketing": 4000.0,
+              "impostos": 1700.0
+            }
+          },
+          {
+            "id": "V003",
+            "broker": "Ana",
+            "sale_value": 650000.0,
+            "commission_rate": 0.055,
+            "variable_costs": {
+              "comissao_corretor": 15000.0,
+              "marketing": 3500.0,
+              "impostos": 1900.0
+            }
+          }
+        ],
+        "fixed_costs": {
+          "aluguel": 20000.0,
+          "salarios_administrativos": 35000.0,
+          "tecnologia": 8000.0
+        },
+        "other_income": 5000.0,
+        "other_expenses": 3000.0,
+        "depreciation": 4000.0,
+        "amortization": 2000.0
+      }
+    </script>
+
+    <script>
+      const state = {
+        base: null,
+        current: null,
+      };
+
+      const saleTemplate = document.getElementById("sale-template");
+      const costTemplate = document.getElementById("cost-row-template");
+
+      const scenarioNameInput = document.getElementById("scenario-name");
+      const otherIncomeInput = document.getElementById("other-income");
+      const otherExpensesInput = document.getElementById("other-expenses");
+      const depreciationInput = document.getElementById("depreciation");
+      const amortizationInput = document.getElementById("amortization");
+
+      function readEmbeddedScenario() {
+        const element = document.getElementById("default-scenario");
+        if (!element) {
+          return null;
+        }
+        try {
+          return JSON.parse(element.textContent);
+        } catch (error) {
+          console.warn("Erro ao interpretar o cenário embutido.", error);
+          return null;
+        }
+      }
+
+      const scaleRevenueInput = document.getElementById("scale-revenue");
+      const scaleVariableCostsInput = document.getElementById("scale-variable-costs");
+      const scaleFixedCostsInput = document.getElementById("scale-fixed-costs");
+
+      function randomId() {
+        if (typeof crypto !== "undefined" && crypto.randomUUID) {
+          return crypto.randomUUID();
+        }
+        return `sale-${Math.random().toString(36).slice(2, 10)}`;
+      }
+
+      function deepClone(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function normalizeScenario(raw) {
+        const normalized = {
+          name: raw.name || "Cenário",
+          other_income: Number(raw.other_income || 0),
+          other_expenses: Number(raw.other_expenses || 0),
+          depreciation: Number(raw.depreciation || 0),
+          amortization: Number(raw.amortization || 0),
+          fixed_costs: Object.entries(raw.fixed_costs || {}).map(([name, amount]) => ({
+            name,
+            value: Number(amount || 0),
+          })),
+          sales: (raw.sales || []).map((sale) => ({
+            id: sale.id || randomId(),
+            broker: sale.broker || "",
+            sale_value: Number(sale.sale_value || 0),
+            commission_rate: Number(sale.commission_rate || 0),
+            manual_revenue:
+              sale.revenue !== undefined && sale.revenue !== null
+                ? Number(sale.revenue)
+                : null,
+            variable_costs: Object.entries(sale.variable_costs || {}).map(
+              ([name, amount]) => ({
+                name,
+                value: Number(amount || 0),
+              }),
+            ),
+            notes: sale.notes || "",
+          })),
+        };
+
+        normalized.sales.sort((a, b) => a.id.localeCompare(b.id));
+        return normalized;
+      }
+
+      function computeSaleRevenue(sale) {
+        if (sale.manual_revenue !== null && sale.manual_revenue !== undefined) {
+          return sale.manual_revenue;
+        }
+        return sale.sale_value * sale.commission_rate;
+      }
+
+      function computeSaleVariableCosts(sale) {
+        return sale.variable_costs.reduce((total, item) => total + item.value, 0);
+      }
+
+      function computeScenarioMetrics(scenario) {
+        const totalRevenue = scenario.sales.reduce(
+          (total, sale) => total + computeSaleRevenue(sale),
+          0,
+        );
+        const totalVariableCosts = scenario.sales.reduce(
+          (total, sale) => total + computeSaleVariableCosts(sale),
+          0,
+        );
+        const contributionMargin = totalRevenue - totalVariableCosts;
+        const contributionMarginRatio = totalRevenue
+          ? contributionMargin / totalRevenue
+          : 0;
+        const fixedCostTotal = scenario.fixed_costs.reduce(
+          (total, cost) => total + cost.value,
+          0,
+        );
+        const ebitda =
+          contributionMargin -
+          fixedCostTotal +
+          scenario.other_income -
+          scenario.other_expenses;
+        const operatingProfit =
+          ebitda - scenario.depreciation - scenario.amortization;
+        const netMargin = totalRevenue ? operatingProfit / totalRevenue : 0;
+        const breakEvenRevenue =
+          contributionMarginRatio > 0
+            ? fixedCostTotal / contributionMarginRatio
+            : null;
+
+        return {
+          totalRevenue,
+          totalVariableCosts,
+          contributionMargin,
+          contributionMarginRatio,
+          fixedCostTotal,
+          ebitda,
+          operatingProfit,
+          netMargin,
+          breakEvenRevenue,
+        };
+      }
+
+      function computeBrokerSummary(scenario) {
+        const summary = new Map();
+        for (const sale of scenario.sales) {
+          const revenue = computeSaleRevenue(sale);
+          const variable = computeSaleVariableCosts(sale);
+          const margin = revenue - variable;
+          const key = sale.broker || "Sem corretor";
+          if (!summary.has(key)) {
+            summary.set(key, {
+              revenue: 0,
+              variable: 0,
+              margin: 0,
+            });
+          }
+          const entry = summary.get(key);
+          entry.revenue += revenue;
+          entry.variable += variable;
+          entry.margin += margin;
+        }
+
+        return Array.from(summary.entries())
+          .map(([broker, values]) => ({
+            broker,
+            revenue: values.revenue,
+            variable: values.variable,
+            margin: values.margin,
+            marginRatio: values.revenue ? values.margin / values.revenue : 0,
+          }))
+          .sort((a, b) => a.broker.localeCompare(b.broker));
+      }
+
+      function formatCurrency(value) {
+        return new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+          minimumFractionDigits: 2,
+        }).format(value || 0);
+      }
+
+      function formatPercent(value) {
+        return new Intl.NumberFormat("pt-BR", {
+          style: "percent",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(value || 0);
+      }
+
+      function renderSummary() {
+        const metrics = computeScenarioMetrics(state.current);
+        const rows = [
+          ["Receita Total", formatCurrency(metrics.totalRevenue)],
+          ["Custos Variáveis", formatCurrency(metrics.totalVariableCosts)],
+          ["Margem de Contribuição", formatCurrency(metrics.contributionMargin)],
+          ["Margem de Contribuição %", formatPercent(metrics.contributionMarginRatio)],
+          ["Custos Fixos", formatCurrency(metrics.fixedCostTotal)],
+          ["EBITDA", formatCurrency(metrics.ebitda)],
+          ["Lucro Operacional", formatCurrency(metrics.operatingProfit)],
+          ["Margem Líquida", formatPercent(metrics.netMargin)],
+        ];
+
+        if (metrics.breakEvenRevenue !== null) {
+          rows.push(["Faturamento de Break-even", formatCurrency(metrics.breakEvenRevenue)]);
+        }
+
+        const tbody = document.getElementById("summary-body");
+        tbody.innerHTML = rows
+          .map(
+            ([label, value]) =>
+              `<tr><td>${label}</td><td class="kpi-value">${value}</td></tr>`,
+          )
+          .join("");
+      }
+
+      function renderFixedCosts() {
+        const tbody = document.getElementById("fixed-costs-body");
+        tbody.innerHTML = "";
+
+        if (state.current.fixed_costs.length === 0) {
+          const emptyRow = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = 3;
+          cell.textContent = "Nenhum custo cadastrado";
+          cell.classList.add("muted");
+          emptyRow.appendChild(cell);
+          tbody.appendChild(emptyRow);
+          return;
+        }
+
+        state.current.fixed_costs.forEach((cost, index) => {
+          const row = document.createElement("tr");
+
+          const nameCell = document.createElement("td");
+          const nameInput = document.createElement("input");
+          nameInput.type = "text";
+          nameInput.value = cost.name;
+            nameInput.addEventListener("change", (event) => {
+              state.current.fixed_costs[index].name = event.target.value;
+              renderBrokerTable();
+            });
+          nameCell.appendChild(nameInput);
+
+          const valueCell = document.createElement("td");
+          const valueInput = document.createElement("input");
+          valueInput.type = "number";
+          valueInput.step = "0.01";
+          valueInput.value = cost.value;
+          valueInput.addEventListener("change", (event) => {
+            state.current.fixed_costs[index].value = Number(event.target.value || 0);
+            renderSummary();
+          });
+          valueCell.appendChild(valueInput);
+
+          const actionsCell = document.createElement("td");
+          const removeButton = document.createElement("button");
+          removeButton.type = "button";
+          removeButton.className = "remove-cost";
+          removeButton.textContent = "Remover";
+          removeButton.addEventListener("click", () => {
+            state.current.fixed_costs.splice(index, 1);
+            renderAll();
+          });
+          actionsCell.appendChild(removeButton);
+
+          row.appendChild(nameCell);
+          row.appendChild(valueCell);
+          row.appendChild(actionsCell);
+          tbody.appendChild(row);
+        });
+      }
+
+      function renderBrokerTable() {
+        const wrapper = document.getElementById("broker-table-wrapper");
+        const summary = computeBrokerSummary(state.current);
+
+        if (summary.length === 0) {
+          wrapper.innerHTML = "<p class=\"muted\">Nenhuma venda cadastrada.</p>";
+          return;
+        }
+
+        const rows = summary
+          .map(
+            (item) => `
+              <tr>
+                <td>${item.broker}</td>
+                <td>${formatCurrency(item.revenue)}</td>
+                <td>${formatCurrency(item.variable)}</td>
+                <td>${formatCurrency(item.margin)}</td>
+                <td>${formatPercent(item.marginRatio)}</td>
+              </tr>
+            `,
+          )
+          .join("");
+
+        wrapper.innerHTML = `
+          <table class="kpi-table">
+            <thead>
+              <tr>
+                <th>Corretor</th>
+                <th>Receita</th>
+                <th>Custos Variáveis</th>
+                <th>Margem</th>
+                <th>Margem %</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        `;
+      }
+
+      function renderSales() {
+        const container = document.getElementById("sales-container");
+        container.innerHTML = "";
+
+        state.current.sales.forEach((sale, index) => {
+          const node = saleTemplate.content.firstElementChild.cloneNode(true);
+          node.dataset.index = String(index);
+
+          node.querySelector("h3").textContent = `${sale.id} · ${sale.broker || "Sem corretor"}`;
+
+          const saleIdInput = node.querySelector('input[data-field="sale_id"]');
+          saleIdInput.value = sale.id;
+          saleIdInput.addEventListener("change", (event) => {
+            const newId = event.target.value.trim();
+            if (!newId) {
+              event.target.value = sale.id;
+              return;
+            }
+            if (
+              state.current.sales.some(
+                (existing, existingIndex) => existing.id === newId && existingIndex !== index,
+              )
+            ) {
+              alert("Já existe uma venda com esse código. Utilize outro identificador.");
+              event.target.value = sale.id;
+              return;
+            }
+            sale.id = newId;
+            node.querySelector("h3").textContent = `${sale.id} · ${sale.broker || "Sem corretor"}`;
+          });
+
+          const brokerInput = node.querySelector('input[data-field="broker"]');
+          brokerInput.value = sale.broker;
+          brokerInput.addEventListener("input", (event) => {
+            sale.broker = event.target.value;
+            node.querySelector("h3").textContent = `${sale.id} · ${sale.broker || "Sem corretor"}`;
+            renderBrokerTable();
+          });
+
+          const saleValueInput = node.querySelector('input[data-field="sale_value"]');
+          saleValueInput.value = sale.sale_value;
+          saleValueInput.addEventListener("change", (event) => {
+            sale.sale_value = Number(event.target.value || 0);
+            if (sale.manual_revenue !== null && sale.manual_revenue !== undefined) {
+              // mantém receita manual; nenhuma ação
+            }
+            renderAll();
+          });
+
+          const commissionInput = node.querySelector('input[data-field="commission_rate"]');
+          commissionInput.value = sale.commission_rate * 100;
+          commissionInput.addEventListener("change", (event) => {
+            sale.commission_rate = Number(event.target.value || 0) / 100;
+            if (sale.manual_revenue !== null && sale.manual_revenue !== undefined) {
+              // alterar percentual limpa receita manual
+              sale.manual_revenue = null;
+              manualRevenueInput.value = "";
+            }
+            renderAll();
+          });
+
+          const manualRevenueInput = node.querySelector('input[data-field="manual_revenue"]');
+          manualRevenueInput.value =
+            sale.manual_revenue !== null && sale.manual_revenue !== undefined
+              ? sale.manual_revenue
+              : "";
+          manualRevenueInput.addEventListener("change", (event) => {
+            const value = event.target.value;
+            sale.manual_revenue = value === "" ? null : Number(value || 0);
+            renderAll();
+          });
+
+          const clearManualButton = node.querySelector(".clear-manual-revenue");
+          clearManualButton.addEventListener("click", () => {
+            sale.manual_revenue = null;
+            manualRevenueInput.value = "";
+            renderAll();
+          });
+
+          const removeSaleButton = node.querySelector(".remove-sale");
+          removeSaleButton.addEventListener("click", () => {
+            state.current.sales.splice(index, 1);
+            renderAll();
+          });
+
+          const addVariableCostButton = node.querySelector(".add-variable-cost");
+          addVariableCostButton.addEventListener("click", () => {
+            sale.variable_costs.push({ name: "Novo custo", value: 0 });
+            renderSales();
+            renderSummary();
+            renderBrokerTable();
+          });
+
+          const variableTableBody = node.querySelector("tbody");
+          variableTableBody.innerHTML = "";
+          sale.variable_costs.forEach((cost, costIndex) => {
+            const costRow = costTemplate.content.firstElementChild.cloneNode(true);
+            const nameInput = costRow.querySelector('input[data-field="cost-name"]');
+            const valueInput = costRow.querySelector('input[data-field="cost-value"]');
+
+            nameInput.value = cost.name;
+            nameInput.addEventListener("change", (event) => {
+              sale.variable_costs[costIndex].name = event.target.value;
+            });
+
+            valueInput.value = cost.value;
+            valueInput.addEventListener("change", (event) => {
+              sale.variable_costs[costIndex].value = Number(event.target.value || 0);
+              renderSummary();
+              renderBrokerTable();
+            });
+
+            const removeCostButton = costRow.querySelector(".remove-cost");
+            removeCostButton.addEventListener("click", () => {
+              sale.variable_costs.splice(costIndex, 1);
+              renderSales();
+              renderSummary();
+              renderBrokerTable();
+            });
+
+            variableTableBody.appendChild(costRow);
+          });
+
+          const totalRevenue = computeSaleRevenue(sale);
+          const totalVariable = computeSaleVariableCosts(sale);
+          const contribution = totalRevenue - totalVariable;
+          const marginRatio = totalRevenue ? contribution / totalRevenue : 0;
+          const footer = node.querySelector(".sale-metrics");
+          footer.innerHTML = `
+            <strong>Receita:</strong> ${formatCurrency(totalRevenue)} ·
+            <strong>Custos Var.:</strong> ${formatCurrency(totalVariable)} ·
+            <strong>Margem:</strong> ${formatCurrency(contribution)} (${formatPercent(
+              marginRatio,
+            )})
+          `;
+
+          container.appendChild(node);
+        });
+      }
+
+      function renderScenarioInputs() {
+        scenarioNameInput.value = state.current.name;
+        otherIncomeInput.value = state.current.other_income;
+        otherExpensesInput.value = state.current.other_expenses;
+        depreciationInput.value = state.current.depreciation;
+        amortizationInput.value = state.current.amortization;
+      }
+
+      function renderAll() {
+        renderScenarioInputs();
+        renderSummary();
+        renderFixedCosts();
+        renderBrokerTable();
+        renderSales();
+      }
+
+      function applyScaling() {
+        const revenueMultiplier = parseFloat(scaleRevenueInput.value);
+        const variableMultiplier = parseFloat(scaleVariableCostsInput.value);
+        const fixedMultiplier = parseFloat(scaleFixedCostsInput.value);
+
+        for (const sale of state.current.sales) {
+          if (!Number.isNaN(revenueMultiplier)) {
+            if (sale.manual_revenue !== null && sale.manual_revenue !== undefined) {
+              sale.manual_revenue *= revenueMultiplier;
+            } else {
+              sale.sale_value *= revenueMultiplier;
+            }
+          }
+          if (!Number.isNaN(variableMultiplier)) {
+            sale.variable_costs.forEach((cost) => {
+              cost.value *= variableMultiplier;
+            });
+          }
+        }
+
+        if (!Number.isNaN(fixedMultiplier)) {
+          state.current.fixed_costs.forEach((cost) => {
+            cost.value *= fixedMultiplier;
+          });
+        }
+
+        scaleRevenueInput.value = "";
+        scaleVariableCostsInput.value = "";
+        scaleFixedCostsInput.value = "";
+        renderAll();
+      }
+
+      function resetScenario() {
+        state.current = deepClone(state.base);
+        renderAll();
+      }
+
+      function uniqueName(baseName, used, fallbackPrefix) {
+        const base = baseName && baseName.trim() ? baseName.trim() : fallbackPrefix;
+        let candidate = base;
+        let counter = 2;
+        while (used.has(candidate)) {
+          candidate = `${base} (${counter})`;
+          counter += 1;
+        }
+        used.add(candidate);
+        return candidate;
+      }
+
+      function scenarioToJson(scenario) {
+        const fixedCostsUsed = new Set();
+        const payload = {
+          name: scenario.name,
+          sales: scenario.sales.map((sale) => {
+            const usedCosts = new Set();
+            const variableCosts = Object.fromEntries(
+              sale.variable_costs.map((cost, index) => [
+                uniqueName(cost.name, usedCosts, `Custo ${index + 1}`),
+                cost.value,
+              ]),
+            );
+            const result = {
+              id: sale.id,
+              broker: sale.broker,
+              sale_value: sale.sale_value,
+              commission_rate: sale.commission_rate,
+              variable_costs: variableCosts,
+            };
+            if (sale.notes) {
+              result.notes = sale.notes;
+            }
+            if (sale.manual_revenue !== null && sale.manual_revenue !== undefined) {
+              result.revenue = sale.manual_revenue;
+            }
+            return result;
+          }),
+          fixed_costs: Object.fromEntries(
+            scenario.fixed_costs.map((cost, index) => [
+              uniqueName(cost.name, fixedCostsUsed, `Custo Fixo ${index + 1}`),
+              cost.value,
+            ]),
+          ),
+          other_income: scenario.other_income,
+          other_expenses: scenario.other_expenses,
+          depreciation: scenario.depreciation,
+          amortization: scenario.amortization,
+        };
+
+        return payload;
+      }
+
+      function downloadScenario() {
+        const payload = scenarioToJson(state.current);
+        const blob = new Blob([JSON.stringify(payload, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        const safeName = (state.current.name || "cenario").replace(/\s+/g, "-");
+        link.download = `${safeName.toLowerCase()}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      function generateSaleId() {
+        let counter = state.current.sales.length + 1;
+        while (true) {
+          const candidate = `V${String(counter).padStart(3, "0")}`;
+          if (!state.current.sales.some((sale) => sale.id === candidate)) {
+            return candidate;
+          }
+          counter += 1;
+        }
+      }
+
+      function addSale() {
+        state.current.sales.push({
+          id: generateSaleId(),
+          broker: "",
+          sale_value: 0,
+          commission_rate: 0.05,
+          manual_revenue: null,
+          variable_costs: [],
+          notes: "",
+        });
+        renderAll();
+      }
+
+      async function importScenario(file) {
+        const text = await file.text();
+        const json = JSON.parse(text);
+        state.base = normalizeScenario(json);
+        state.current = deepClone(state.base);
+        renderAll();
+      }
+
+      function wireStaticEvents() {
+        document
+          .getElementById("apply-scaling")
+          .addEventListener("click", applyScaling);
+        document
+          .getElementById("reset-scenario")
+          .addEventListener("click", resetScenario);
+        document
+          .getElementById("download-scenario")
+          .addEventListener("click", downloadScenario);
+        document.getElementById("add-fixed-cost").addEventListener("click", () => {
+          state.current.fixed_costs.push({ name: "Novo custo", value: 0 });
+          renderFixedCosts();
+          renderSummary();
+        });
+        document.getElementById("add-sale").addEventListener("click", addSale);
+        scenarioNameInput.addEventListener("input", (event) => {
+          state.current.name = event.target.value;
+        });
+        otherIncomeInput.addEventListener("change", (event) => {
+          state.current.other_income = Number(event.target.value || 0);
+          renderAll();
+        });
+        otherExpensesInput.addEventListener("change", (event) => {
+          state.current.other_expenses = Number(event.target.value || 0);
+          renderAll();
+        });
+        depreciationInput.addEventListener("change", (event) => {
+          state.current.depreciation = Number(event.target.value || 0);
+          renderAll();
+        });
+        amortizationInput.addEventListener("change", (event) => {
+          state.current.amortization = Number(event.target.value || 0);
+          renderAll();
+        });
+
+        document.getElementById("scenario-upload").addEventListener("change", (event) => {
+          const [file] = event.target.files;
+          if (file) {
+            importScenario(file).catch((error) => {
+              console.error("Erro ao carregar cenário", error);
+              alert("Não foi possível carregar o arquivo. Verifique o formato JSON.");
+            });
+            event.target.value = "";
+          }
+        });
+      }
+
+      function bootstrap() {
+        wireStaticEvents();
+        const embedded = readEmbeddedScenario();
+        if (embedded) {
+          state.base = normalizeScenario(embedded);
+        } else {
+          console.warn("Não foi possível carregar o cenário padrão embutido. Usando fallback.");
+          state.base = {
+            name: "Cenário",
+            sales: [],
+            fixed_costs: [],
+            other_income: 0,
+            other_expenses: 0,
+            depreciation: 0,
+            amortization: 0,
+          };
+        }
+        state.current = deepClone(state.base);
+        renderAll();
+      }
+
+      bootstrap();
+    </script>
   </body>
 </html>

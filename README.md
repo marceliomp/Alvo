@@ -19,7 +19,7 @@ Aplicativo de console para analisar a margem de contribuição, EBITDA e lucro d
    - ajustar custos fixos, outras receitas/despesas, depreciação e amortização;
    - importar um cenário em JSON ou exportar o cenário ajustado.
 
-3. Para hospedar de forma estática (ex.: Vercel, GitHub Pages ou Netlify), defina a pasta `web` como diretório público de saída. O arquivo `web/exemplo_cenario.json` é incluído para que o playground tenha um cenário padrão mesmo em hospedagens estáticas.
+3. Para hospedar de forma estática (ex.: Vercel, GitHub Pages ou Netlify), publique somente o arquivo `web/index.html`. Ele já inclui estilos, scripts e o cenário padrão embutido, funcionando inclusive ao abrir o arquivo diretamente no navegador.
 
 ### Aplicativo de linha de comando
 
