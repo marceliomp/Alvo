@@ -4,6 +4,25 @@ Aplicativo de console para analisar a margem de contribuição, EBITDA e lucro d
 
 ## Como executar
 
+### Interface web (playground visual)
+
+1. Instale dependências opcionais (nenhuma é obrigatória) e inicie um servidor HTTP simples apontando para a pasta `web`:
+
+   ```bash
+   python -m http.server --directory web 8000
+   ```
+
+2. Acesse <http://localhost:8000> para abrir o **Alvo Forecast Playground**. A tela carrega o cenário de exemplo e permite:
+
+   - editar cada venda (valor do imóvel, percentual de comissão, receita manual, custos variáveis e corretor);
+   - aplicar multiplicadores globais para testar cenários;
+   - ajustar custos fixos, outras receitas/despesas, depreciação e amortização;
+   - importar um cenário em JSON ou exportar o cenário ajustado.
+
+3. Para hospedar de forma estática (ex.: Vercel, GitHub Pages ou Netlify), defina a pasta `web` como diretório público de saída. O arquivo `web/exemplo_cenario.json` é incluído para que o playground tenha um cenário padrão mesmo em hospedagens estáticas.
+
+### Aplicativo de linha de comando
+
 1. **Criar um ambiente virtual (opcional, mas recomendado):**
 
    ```bash

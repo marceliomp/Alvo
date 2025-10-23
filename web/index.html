@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Alvo Forecast Playground</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Alvo Forecast Playground</h1>
+      <p>
+        Explore cenários de margem de contribuição, EBITDA e lucro ajustando as
+        premissas das vendas e dos custos da imobiliária.
+      </p>
+    </header>
+
+    <main>
+      <section class="card">
+        <div class="card-header">
+          <h2>Cenário</h2>
+          <div class="scenario-actions">
+            <label class="scenario-name">
+              Nome:
+              <input id="scenario-name" type="text" />
+            </label>
+            <button id="reset-scenario" type="button">Restaurar Base</button>
+            <button id="download-scenario" type="button">Baixar JSON</button>
+            <label class="upload-btn">
+              Importar JSON
+              <input id="scenario-upload" type="file" accept="application/json" />
+            </label>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="grid summary-grid">
+            <div>
+              <h3>Resumo</h3>
+              <table class="kpi-table">
+                <tbody id="summary-body"></tbody>
+              </table>
+            </div>
+            <div>
+              <h3>Custos Fixos</h3>
+              <table class="editable-table">
+                <thead>
+                  <tr>
+                    <th>Descrição</th>
+                    <th>Valor (R$)</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="fixed-costs-body"></tbody>
+              </table>
+              <button id="add-fixed-cost" type="button">Adicionar custo fixo</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Escalas Rápidas</h2>
+        </div>
+        <div class="card-body scale-grid">
+          <label>
+            Receita / Valor do imóvel (%):
+            <input id="scale-revenue" type="number" step="0.01" placeholder="ex: 1.08" />
+          </label>
+          <label>
+            Custos variáveis (%):
+            <input id="scale-variable-costs" type="number" step="0.01" placeholder="ex: 0.95" />
+          </label>
+          <label>
+            Custos fixos (%):
+            <input id="scale-fixed-costs" type="number" step="0.01" placeholder="ex: 1.05" />
+          </label>
+          <button id="apply-scaling" type="button">Aplicar</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Outros Itens</h2>
+        </div>
+        <div class="card-body other-grid">
+          <label>
+            Outras Receitas (R$):
+            <input id="other-income" type="number" step="0.01" />
+          </label>
+          <label>
+            Outras Despesas (R$):
+            <input id="other-expenses" type="number" step="0.01" />
+          </label>
+          <label>
+            Depreciação (R$):
+            <input id="depreciation" type="number" step="0.01" />
+          </label>
+          <label>
+            Amortização (R$):
+            <input id="amortization" type="number" step="0.01" />
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Vendas por Corretor</h2>
+        </div>
+        <div class="card-body">
+          <div id="broker-table-wrapper" class="table-wrapper"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Vendas Individuais</h2>
+        </div>
+        <div class="card-body">
+          <div id="sales-container"></div>
+          <div class="sales-actions">
+            <button id="add-sale" type="button">Adicionar venda</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <template id="sale-template">
+      <article class="sale-card">
+        <header class="sale-header">
+          <h3></h3>
+          <div class="sale-header-actions">
+            <button class="add-variable-cost" type="button">Adicionar custo variável</button>
+            <button class="remove-sale" type="button">Remover venda</button>
+          </div>
+        </header>
+        <div class="sale-grid">
+          <label>
+            Código da venda
+            <input type="text" data-field="sale_id" />
+          </label>
+          <label>
+            Corretor(a)
+            <input type="text" data-field="broker" />
+          </label>
+          <label>
+            Valor do imóvel (R$)
+            <input type="number" step="0.01" data-field="sale_value" />
+          </label>
+          <label>
+            Comissão da Alvo (% sobre o imóvel)
+            <input type="number" step="0.01" data-field="commission_rate" />
+          </label>
+          <label>
+            Receita manual (R$)
+            <input type="number" step="0.01" data-field="manual_revenue" />
+            <button class="clear-manual-revenue" type="button">Limpar receita manual</button>
+          </label>
+        </div>
+        <div class="variable-costs">
+          <h4>Custos variáveis</h4>
+          <table class="editable-table">
+            <thead>
+              <tr>
+                <th>Descrição</th>
+                <th>Valor (R$)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <footer class="sale-footer">
+          <div class="sale-metrics"></div>
+        </footer>
+      </article>
+    </template>
+
+    <template id="cost-row-template">
+      <tr>
+        <td>
+          <input type="text" data-field="cost-name" />
+        </td>
+        <td>
+          <input type="number" step="0.01" data-field="cost-value" />
+        </td>
+        <td>
+          <button class="remove-cost" type="button">Remover</button>
+        </td>
+      </tr>
+    </template>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
