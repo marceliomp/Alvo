@@ -1,0 +1,44 @@
+{
+  "name": "Base 2024",
+  "sales": [
+    {
+      "id": "V001",
+      "broker": "Maria",
+      "revenue": 150000.0,
+      "variable_costs": {
+        "comissao": 9000.0,
+        "marketing": 2500.0,
+        "impostos": 4500.0
+      }
+    },
+    {
+      "id": "V002",
+      "broker": "João",
+      "revenue": 120000.0,
+      "variable_costs": {
+        "comissao": 7200.0,
+        "marketing": 1800.0,
+        "impostos": 3600.0
+      }
+    },
+    {
+      "id": "V003",
+      "broker": "Ana",
+      "revenue": 90000.0,
+      "variable_costs": {
+        "comissao": 5400.0,
+        "marketing": 1500.0,
+        "impostos": 2700.0
+      }
+    }
+  ],
+  "fixed_costs": {
+    "aluguel": 20000.0,
+    "salarios_administrativos": 35000.0,
+    "tecnologia": 8000.0
+  },
+  "other_income": 5000.0,
+  "other_expenses": 3000.0,
+  "depreciation": 4000.0,
+  "amortization": 2000.0
+}
